@@ -1,0 +1,20 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "NodeJS-Tutorial",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KL35kkk/NodeJS-Tutorial.git"
+  },
+  "author": "Kevin Lee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KL35kkk/NodeJS-Tutorial/issues"
+  },
+  "homepage": "https://github.com/KL35kkk/NodeJS-Tutorial#readme"
+}

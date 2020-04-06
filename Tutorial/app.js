@@ -33,7 +33,6 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             // concatentate all the chunks to a parsed data
             const parsedBody = Buffer.concat(body).toString();
-            console.log(parsedBody);
             const message = parsedBody.split('=')[1];
 
             // fs.writeFileSync('message.txt', message); (Important: we would block the code execution here)
