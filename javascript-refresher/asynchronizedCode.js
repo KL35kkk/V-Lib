@@ -21,4 +21,4 @@ const fetchData = () => {
   
   console.log('Question 1');
   console.log('Time start!');
-// These two are synchronized code  
+// These two are synchronized code
