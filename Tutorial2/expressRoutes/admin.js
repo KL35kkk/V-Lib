@@ -1,20 +1,16 @@
 // For all the other routes
-
 const express = require('express');
 const path = require('path');
 const rootDir = require('../expressPath/path');
 
+const productsController = require('../expressControllers/productController');
+
 const router = express.Router();
 
 // /admin/add-product  => GET
-router.get('/add-product', (req, res, next) => {
-    res.sendFile(path.join(rootDir, 'expressViews', 'add-product.html'));
-});
+router.get('/add-product', productsController.getAddProductPage);
 
 // /admin/product  => POST
-router.post('/add-product', (req, res, next) => {  // parsing the incoming requests from the previous middleware
-    console.log(req.body);
-    res.redirect('/');
-});
+router.post('/add-product', productsController.postAddProductPage);
 
 module.exports = router;

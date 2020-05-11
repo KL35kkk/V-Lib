@@ -4,8 +4,13 @@ const path = require('path');
 
 const app = express();
 
+app.set('view engine', 'ejs');
+app.set('views', 'expressViews');
+
 const adminRoutes = require('./expressRoutes/admin');
 const shopRoutes = require('./expressRoutes/shop');
+
+const errorController = require('./expressControllers/404');
 
 app.use(bodyParser.urlencoded({extended: false}));
 // grant access to the public folder
@@ -15,8 +20,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', adminRoutes); // to replace other routes
 app.use(shopRoutes); // to replace the general routes
 
-app.use((req, res, next) => { // dealing with all the other Not Found routes
-    res.status(404).sendFile(path.join(__dirname, 'expressViews', '404.html'));
-});
+app.use(errorController.get404Page);
 
 app.listen(3000);
