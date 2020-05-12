@@ -11,23 +11,23 @@ exports.getAddProductPage = (req, res, next) => {
 };
 
 exports.postAddProductPage = (req, res, next) => {  // parsing the incoming requests from the previous middleware
-    const product = new Product(req.body.title);
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const description = req.body.description;
+    const price = req.body.price;
+
+    const product = new Product(title, imageUrl, description, price);
     product.save(); // push into the array
-    console.log(req.body);
     res.redirect('/');
 };
 
 exports.getProducts = (req, res, next) => {
-    // the data will be put into products by applying callback() as parameter to fetchAll()
     Product.fetchAll(products => {
-        res.render('shop/product-list', {
+        // renders to the templating engine
+        res.render('admin/products', {
             cart: products, 
-            pageTitle: 'Shop', 
-            path: '/',
-            hasProducts: products.length > 0,
-            activeShop: true,
-            productCSS: true
+            pageTitle: 'All Products', 
+            path: '/admin/products',
         });
     });
-    // renders to the templating engine
 }
