@@ -10,6 +10,8 @@ const p = path.join(
 
 const getProductsFromFile = cb => {
     fs.readFile(p, (err, fileContent) => {
+        // here we'll finally put the data into cb()
+        // and the data we put into cb() will be the 'products'
         if (err) {
             cb([]);
         } else {
