@@ -24,6 +24,20 @@ exports.getProducts = (req, res, next) => {
     });
 }
 
+exports.getProduct = (req, res, next) => {
+    // use params method to get the productID we put in the router
+    const id = req.params.productID;
+    Product.findById(id, product => {
+        res.render('shop/product-detail', {
+            product: product,
+            pageTitle: product.title,
+            // this is not the router path, but the variable that marks active button
+            path: '/products',
+
+        });
+    });
+}
+
 exports.getCart = (req, res, next) => {
     // the data will be put into products by applying callback() as parameter to fetchAll()
     res.render('shop/cart', {
