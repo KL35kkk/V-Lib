@@ -19,6 +19,7 @@ router.get('/products/:productID', shopController.getProduct);
 // Cart page
 router.get('/cart', shopController.getCart);
 router.post('/cart', shopController.postCart);
+// Also add delete in cart page
 router.post('/cart-delete-item', shopController.postCartDelete);
 
 // Orders
