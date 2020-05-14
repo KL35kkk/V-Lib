@@ -12,14 +12,18 @@ const router = express.Router();
 // If we don't use GET method here, we can't go to the other routes (like 404 page) after this route.
 router.get('/', shopController.getIndex);
 
+// Products page and single product detail page
 router.get('/products', shopController.getProducts);
-
 router.get('/products/:productID', shopController.getProduct);
 
+// Cart page
 router.get('/cart', shopController.getCart);
+router.post('/cart', shopController.postCart);
 
+// Orders
 router.get('/orders', shopController.getOrders);
 
+// Checkout
 router.get('/checkout', shopController.getCheckout);
 
 module.exports = router;

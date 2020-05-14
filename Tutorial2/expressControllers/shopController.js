@@ -1,4 +1,5 @@
 const Product = require('../expressModels/productModel');
+const Cart = require('../expressModels/cartModel');
 
 exports.getIndex = (req, res, next) => {
     // the data will be put into products by applying callback() as parameter to fetchAll()
@@ -44,6 +45,14 @@ exports.getCart = (req, res, next) => {
         path: '/cart',
         pageTitle: 'Your Cart'
     })
+}
+
+exports.postCart = (req, res, next) => {
+    const ID = req.body.productID;
+    Product.findById(ID, product => {
+        Cart.addProducts(ID, product.price);
+    });
+    res.redirect('/cart');
 }
 
 exports.getOrders = (req, res, next) => {
