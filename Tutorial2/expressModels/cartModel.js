@@ -9,6 +9,9 @@ const p = path.join(
 );
 
 module.exports = class Cart {
+    // Since we don't create cart that often, we mostly need to interact with the database
+    // we can just use static methods in the Cart Model
+
     static addProducts(id, productPrice) {
         // fetch the previous cart
         fs.readFile(p, (err, fileContent) => {
