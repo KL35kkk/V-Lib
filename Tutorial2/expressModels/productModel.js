@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const rootDir = require('../expressPath/path');
 
-const Cart = require('../expressModels/cartModel');
+const Cart = require('./cartModel');
 
 const p = path.join(
     rootDir, 
@@ -36,10 +36,12 @@ module.exports = class Product {
         getProductsFromFile(products => {
             // if we need to edit a product, we will replace the older version with the newer one
             if (this.id) {
-                const existingProductIndex = products.findIndex(product => product.id === this.id);
+                const existingProductIndex = products.findIndex(
+                    product => product.id === this.id
+                );
                 const updatedProducts = [...products];
                 updatedProducts[existingProductIndex] = this;
-                fs.writeFile(p, JSON.stringify(products), (err) => {
+                fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
                     console.log(err);
                 });
             } else {
@@ -75,7 +77,7 @@ module.exports = class Product {
                 if (!err) {
                     Cart.deleteProduct(id, product.price);
                 }
-            })
+            });
         });
     }
 

@@ -5,7 +5,7 @@ const rootDir = require('../expressPath/path');
 const p = path.join(
     rootDir, 
     'expressData', 
-    'products.json'
+    'cart.json'
 );
 
 module.exports = class Cart {
@@ -18,22 +18,25 @@ module.exports = class Cart {
                 cart = JSON.parse(fileContent);
             }
             // add new product => increase quantity/add brand new one
-            const existingProductsIndex = cart.products.findIndex(product => product.id === id);
-            const existingProducts = cart[existingProductsIndex];
+            const existingProductsIndex = cart.products.findIndex(
+                product => product.id === id    
+            );
+            const existingProducts = cart.products[existingProductsIndex];
             let updatedProduct;
             if (existingProducts) {
                 // if existed, +1
-                updatedProduct = { ...existingProducts};
+                updatedProduct = { ...existingProducts };
                 updatedProduct.qty = updatedProduct.qty + 1;
                 cart.products = [...cart.products];
                 cart.products[existingProductsIndex] = updatedProduct;
             } else {
                 // if doesn't exist, create new product
                 updatedProduct = {id: id, qty: 1};
+                cart.products = [...cart.products, updatedProduct];
+
             }
             // convert productPrice from string to number
             cart.totalPrice = cart.totalPrice + +productPrice;
-            cart.products = [...cart.products];
             fs.writeFile(p, JSON.stringify(cart), err => {
                 console.log(err);
             })
@@ -46,7 +49,7 @@ module.exports = class Cart {
             if (err) {
                 return;
             }
-            const updatedCart = {...JSON.parse(fileContent)};
+            const updatedCart = { ...JSON.parse(fileContent) };
             const product = updatedCart.products.find(product => product.id === id);
             if (!product) {
                 return;
@@ -59,7 +62,7 @@ module.exports = class Cart {
                 product => product.id !== id
             );
             updatedCart.totalPrice = 
-                updatedCart.totalPrice - (productPrice*productQty);
+                updatedCart.totalPrice - (productPrice * productQty);
 
             fs.writeFile(p, JSON.stringify(updatedCart), err => {
                 console.log(err);
