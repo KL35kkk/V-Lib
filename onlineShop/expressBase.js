@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const db = require('./expressPath/database');
 
 const app = express();
 
@@ -9,6 +10,8 @@ app.set('views', 'expressViews');
 
 const adminRoutes = require('./expressRoutes/admin');
 const shopRoutes = require('./expressRoutes/shop');
+
+db.execute('SELECT * FROM products').then().catch();
 
 const errorController = require('./expressControllers/404');
 
