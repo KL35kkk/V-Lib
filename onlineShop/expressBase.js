@@ -11,7 +11,13 @@ app.set('views', 'expressViews');
 const adminRoutes = require('./expressRoutes/admin');
 const shopRoutes = require('./expressRoutes/shop');
 
-db.execute('SELECT * FROM products').then().catch();
+db.execute('SELECT * FROM products')
+    .then(result => {
+        console.log(result[0], result[1]);
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
 const errorController = require('./expressControllers/404');
 

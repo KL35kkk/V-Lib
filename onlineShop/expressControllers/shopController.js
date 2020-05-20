@@ -3,40 +3,46 @@ const Cart = require('../expressModels/cartModel');
 
 exports.getIndex = (req, res, next) => {
     // the data will be put into products by applying callback() as parameter to fetchAll()
-    Product.fetchAll(products => {
-        // renders to the templating engine
-        res.render('shop/index', {
-            cart: products, 
-            pageTitle: 'Welcome!', 
-            path: '/',
-        });
-    });
+    Product.fetchAll()
+        .then(([rows, fileData]) => {
+            res.render('shop/index', {
+                cart: rows, 
+                pageTitle: 'Welcome!', 
+                path: '/',
+            });
+        })
+        .catch(err => console.log(err));
+
 }
 
 exports.getProducts = (req, res, next) => {
     // the data will be put into products by applying callback() as parameter to fetchAll()
-    Product.fetchAll(products => {
-        // renders to the templating engine
+    Product.fetchAll()
+    .then(([rows, fileData]) => {
         res.render('shop/product-list', {
-            cart: products, 
+            cart: rows, 
             pageTitle: 'Shop', 
             path: '/products',
         });
-    });
+    })
+    .catch(err => console.log(err));
+
 }
 
 exports.getProduct = (req, res, next) => {
     // use params method to get the productID we put in the router
     const id = req.params.productID;
-    Product.findById(id, product => {
-        res.render('shop/product-detail', {
-            product: product,
-            pageTitle: product.title,
-            // this is not the router path, but the variable that marks active button
-            path: '/products',
-
-        });
-    });
+    Product.findById(id)
+        // the product returned is still an array, so we'll pass product[0] to the view
+        .then(([product]) => {
+            res.render('shop/product-detail', {
+                product: product[0],
+                pageTitle: product.title,
+                // this is not the router path, but the variable that marks active button
+                path: '/products',
+            });
+        })
+        .catch(err => console.log(err));
 }
 
 exports.getCart = (req, res, next) => {
