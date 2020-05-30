@@ -11,13 +11,7 @@ app.set('views', 'expressViews');
 const adminRoutes = require('./expressRoutes/admin');
 const shopRoutes = require('./expressRoutes/shop');
 
-db.execute('SELECT * FROM products')
-    .then(result => {
-        console.log(result[0], result[1]);
-    })
-    .catch(err => {
-        console.log(err);
-    });
+const sequelize = require('./expressPath/database');
 
 const errorController = require('./expressControllers/404');
 
@@ -30,5 +24,14 @@ app.use('/admin', adminRoutes); // to replace other routes
 app.use(shopRoutes); // to replace the general routes
 
 app.use(errorController.get404Page);
+
+// sync the models to the database and create corresponding tables
+sequelize.sync()
+    .then(result => {
+        // console.log(result);
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
 app.listen(3000);
