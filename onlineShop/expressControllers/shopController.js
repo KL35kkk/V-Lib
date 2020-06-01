@@ -2,47 +2,56 @@ const Product = require('../expressModels/productModel');
 const Cart = require('../expressModels/cartModel');
 
 exports.getIndex = (req, res, next) => {
-    // the data will be put into products by applying callback() as parameter to fetchAll()
-    Product.fetchAll()
-        .then(([rows, fileData]) => {
-            res.render('shop/index', {
-                cart: rows, 
-                pageTitle: 'Welcome!', 
-                path: '/',
-            });
-        })
-        .catch(err => console.log(err));
-
+    Product.findAll().then(products => {
+        res.render('shop/index', {
+            cart: products, 
+            pageTitle: 'Welcome!', 
+            path: '/',
+        });
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.getProducts = (req, res, next) => {
-    // the data will be put into products by applying callback() as parameter to fetchAll()
-    Product.fetchAll()
-    .then(([rows, fileData]) => {
+    Product.findAll().then(products => {
         res.render('shop/product-list', {
-            cart: rows, 
+            cart: products, 
             pageTitle: 'Shop', 
             path: '/products',
         });
-    })
-    .catch(err => console.log(err));
-
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
 exports.getProduct = (req, res, next) => {
     // use params method to get the productID we put in the router
     const id = req.params.productID;
-    Product.findById(id)
+/*    
+    Product.findAll({where: {id: id}})
+    .then(products => {
+        res.render('shop/product-detail', {
+            product: products[0],
+            pageTitle: products[0].title,
+            // this is not the router path, but the variable that marks active button
+            path: '/products',
+        });
+    })    
+    .catch(err => console.log(err));
+*/
+    Product.findByPk(id)
         // the product returned is still an array, so we'll pass product[0] to the view
-        .then(([product]) => {
+        .then((product) => {
             res.render('shop/product-detail', {
-                product: product[0],
+                product: product,
                 pageTitle: product.title,
                 // this is not the router path, but the variable that marks active button
                 path: '/products',
             });
         })
         .catch(err => console.log(err));
+
 }
 
 exports.getCart = (req, res, next) => {
@@ -67,7 +76,7 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
     const id = req.body.productID;
-    Product.findById(id, product => {
+    Product.findByPk(id, product => {
         console.log(product);
         Cart.addProducts(id, product.price);
         res.redirect('/cart');
@@ -77,7 +86,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDelete = (req, res, next) => {
     const id = req.body.productID;
-    Product.findById(id, product => {
+    Product.findByPk(id, product => {
         Cart.deleteProduct(id, product.price);
         res.redirect('/cart');
     });
