@@ -17,6 +17,8 @@ const errorController = require('./expressControllers/404');
 
 const Product = require('./expressModels/productModel');
 const User = require('./expressModels/userModel');
+const Cart = require('./expressModels/cartModel');
+const CartItem = require('./expressModels/cartItemModel');
 
 app.use(bodyParser.urlencoded({extended: false}));
 // grant access to the public folder
@@ -39,10 +41,15 @@ app.use(errorController.get404Page);
 
 Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
 
 // sync the models to the database and create corresponding tables
 sequelize
-    .sync({ force: true })
+    .sync()
+    // .sync({ force: true })
     .then(result => {
         return User.findByPk(1);
         // console.log(result);
@@ -54,7 +61,9 @@ sequelize
         return returnedUser;
     })
     .then(returnedUser => {
-        // console.log(returnedUser);
+        return returnedUser.createCart();
+    })
+    .then(cart => {
         app.listen(3000);
     })
     .catch(err => {

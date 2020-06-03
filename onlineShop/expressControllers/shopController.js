@@ -2,27 +2,29 @@ const Product = require('../expressModels/productModel');
 const Cart = require('../expressModels/cartModel');
 
 exports.getIndex = (req, res, next) => {
-    Product.findAll().then(products => {
-        res.render('shop/index', {
-            cart: products, 
-            pageTitle: 'Welcome!', 
-            path: '/',
+    Product.findAll()
+        .then(products => {
+            res.render('shop/index', {
+                cart: products, 
+                pageTitle: 'Welcome!', 
+                path: '/',
+            });
+        }).catch(err => {
+            console.log(err);
         });
-    }).catch(err => {
-        console.log(err);
-    });
 }
 
 exports.getProducts = (req, res, next) => {
-    Product.findAll().then(products => {
-        res.render('shop/product-list', {
-            cart: products, 
-            pageTitle: 'Shop', 
-            path: '/products',
+    Product.findAll()
+        .then(products => {
+            res.render('shop/product-list', {
+                cart: products, 
+                pageTitle: 'Shop', 
+                path: '/products',
+            });
+        }).catch(err => {
+            console.log(err);
         });
-    }).catch(err => {
-        console.log(err);
-    });
 }
 
 exports.getProduct = (req, res, next) => {
@@ -30,15 +32,15 @@ exports.getProduct = (req, res, next) => {
     const id = req.params.productID;
 /*    
     Product.findAll({where: {id: id}})
-    .then(products => {
-        res.render('shop/product-detail', {
-            product: products[0],
-            pageTitle: products[0].title,
-            // this is not the router path, but the variable that marks active button
-            path: '/products',
-        });
-    })    
-    .catch(err => console.log(err));
+        .then(products => {
+            res.render('shop/product-detail', {
+                product: products[0],
+                pageTitle: products[0].title,
+                // this is not the router path, but the variable that marks active button
+                path: '/products',
+            });
+        })    
+        .catch(err => console.log(err));
 */
     Product.findByPk(id)
         // the product returned is still an array, so we'll pass product[0] to the view
@@ -55,6 +57,21 @@ exports.getProduct = (req, res, next) => {
 }
 
 exports.getCart = (req, res, next) => {
+    res.user
+        .getCart()
+        .then(cart => {
+            return cart.getProducts()
+                    .then(products => {
+                        res.render('shop/cart', {
+                            path: '/cart',
+                            pageTitle: 'Your Cart',
+                            products: products
+                        });
+                    })
+                    .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));
+/*
     Cart.getCart(cart => {
         Product.fetchAll(products => {
             const cartProducts = [];
@@ -71,6 +88,7 @@ exports.getCart = (req, res, next) => {
             });
         });
     });
+*/
 
 }
 
