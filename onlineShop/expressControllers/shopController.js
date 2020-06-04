@@ -1,5 +1,4 @@
 const Product = require('../expressModels/productModel');
-const Cart = require('../expressModels/cartModel');
 
 exports.getIndex = (req, res, next) => {
     Product.findAll()
@@ -120,6 +119,9 @@ exports.postCart = (req, res, next) => {
             });
         })
         .then(() => {
+            return fetchedCart.setProducts(null);
+        })
+        .then(result => {
             res.redirect('/cart');
         })
         .catch(err => console.log(err));
@@ -142,11 +144,42 @@ exports.postCartDelete = (req, res, next) => {
 }
 
 exports.getOrders = (req, res, next) => {
-    // the data will be put into products by applying callback() as parameter to fetchAll()
-    res.render('shop/orders', {
-        path: '/orders',
-        pageTitle: 'Your Orders'
-    })
+    // applying eager loading to include product's' from the productModel
+    req.user.getOrders({include: ['products']})
+        .then(orders => {
+            res.render('shop/orders', {
+                path: '/orders',
+                pageTitle: 'Your Orders',
+                orders: orders
+            })
+        })
+        .catch(err => {console.log(err)});
+
+}
+
+exports.postOrders = (req, res, next) => {
+    let fetchedCart;
+    req.user.getCart()
+        .then(cart => {
+            fetchedCart = cart;
+            return cart.getProducts();
+        })
+        .then(products => {
+            // create a new order based on the current cart content
+            return req.user
+                        .createOrder()
+                        .then(order => {
+                            // using method add~() created by sequelize for products
+                            return order.addProducts(products.map(product => {
+                                product.orderItem = {quantity: product.cartItem.quantity};
+                                return product;
+                            }));
+                        });
+        })
+        .then(result => {
+            res.redirect('/orders');
+        })
+        .catch(err => console.log(err));
 }
 
 exports.getCheckout = (req, res, next) => {

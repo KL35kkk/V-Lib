@@ -19,6 +19,8 @@ const Product = require('./expressModels/productModel');
 const User = require('./expressModels/userModel');
 const Cart = require('./expressModels/cartModel');
 const CartItem = require('./expressModels/cartItemModel');
+const Order = require('./expressModels/orderModel');
+const OrderItem = require('./expressModels/orderItemModel');
 
 app.use(bodyParser.urlencoded({extended: false}));
 // grant access to the public folder
@@ -40,11 +42,15 @@ app.use(shopRoutes); // to replace the general routes
 app.use(errorController.get404Page);
 
 Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
+Product.belongsToMany(Cart, {through: CartItem});
+Product.belongsToMany(Order, {through: OrderItem});
 User.hasMany(Product);
+User.hasMany(Order);
 User.hasOne(Cart);
 Cart.belongsTo(User);
 Cart.belongsToMany(Product, {through: CartItem});
-Product.belongsToMany(Cart, {through: CartItem});
+Order.belongsTo(User);
+Order.belongsToMany(Product, {through: OrderItem});
 
 // sync the models to the database and create corresponding tables
 sequelize
