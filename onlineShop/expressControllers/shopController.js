@@ -106,11 +106,13 @@ exports.postCart = (req, res, next) => {
             if (products.length > 0) {
                 product = products[0];
             }
+            // if product exists in the cart, add quantity
             if (product) {
                 const oldQty = product.cartItem.quantity;
                 updatedQty = oldQty + 1;
                 return product;
             }
+            // else, simply return the product
             return Product.findByPk(id);
         })
         .then(product => {
