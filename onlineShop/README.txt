@@ -1,1 +1,1 @@
-This part starts from Section 6
+
