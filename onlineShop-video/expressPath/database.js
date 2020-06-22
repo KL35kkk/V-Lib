@@ -1,11 +1,32 @@
-const Sequelize = require('sequelize');
+const mongodb = require('mongodb');
+const mongoClient = mongodb.MongoClient;
 
-const sequelize = new Sequelize(
-    'onlineShop-complete', 
-    'root', 
-    'nodecomplete123', 
-    {dialect: 'mysql', host: 'localhost'}
-);
-// create a pool of connections
-module.exports = sequelize;
+let _db;
+
+const mongoConnect = (callback) => {
+    mongoClient.connect(
+        'mongodb+srv://kl35:complete123@cluster0-9k0aj.mongodb.net/cluster0-9k0aj.mongodb.net/shop?retryWrites=true&w=majority'
+        )            
+        .then(client => {
+            console.log('connected!');
+            _db = client.db();
+            callback(client);
+        })
+        .catch(err => {
+            console.log(err);
+            throw err;
+        });
+}
+
+const getDb = () => {
+    if(_db) {
+        return _db
+    } 
+    throw 'No database found!';
+}
+
+exports.mongoConnect = mongoConnect;
+exports.getDb = getDb;
+
+
 
