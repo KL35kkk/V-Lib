@@ -41,6 +41,7 @@ app.use(shopRoutes); // to replace the general routes
 
 app.use(errorController.get404Page);
 
+// associations needed
 Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
 Product.belongsToMany(Cart, {through: CartItem});
 Product.belongsToMany(Order, {through: OrderItem});
