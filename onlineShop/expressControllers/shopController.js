@@ -106,7 +106,7 @@ exports.postCart = (req, res, next) => {
             if (products.length > 0) {
                 product = products[0];
             }
-            // if product exists in the cart, add quantity
+            // if we can find the product through {id: id}, add quantity
             if (product) {
                 const oldQty = product.cartItem.quantity;
                 updatedQty = oldQty + 1;
