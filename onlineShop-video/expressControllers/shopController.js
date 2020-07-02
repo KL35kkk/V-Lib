@@ -1,7 +1,7 @@
 const Product = require('../expressModels/productModel');
 
 exports.getIndex = (req, res, next) => {
-    Product.findAll()
+    Product.fetchAll()
         .then(products => {
             res.render('shop/index', {
                 cart: products, 
@@ -14,7 +14,7 @@ exports.getIndex = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-    Product.findAll()
+    Product.fetchAll()
         .then(products => {
             res.render('shop/product-list', {
                 cart: products, 
@@ -29,19 +29,7 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = (req, res, next) => {
     // use params method to get the productID we put in the router
     const id = req.params.productID;
-/*    
-    Product.findAll({where: {id: id}})
-        .then(products => {
-            res.render('shop/product-detail', {
-                product: products[0],
-                pageTitle: products[0].title,
-                // this is not the router path, but the variable that marks active button
-                path: '/products',
-            });
-        })    
-        .catch(err => console.log(err));
-*/
-    Product.findByPk(id)
+    Product.findByID(id)
         // the product returned is still an array, so we'll pass product[0] to the view
         .then((product) => {
             res.render('shop/product-detail', {
@@ -58,75 +46,64 @@ exports.getProduct = (req, res, next) => {
 exports.getCart = (req, res, next) => {
     req.user
         .getCart()
-        .then(cart => {
-            return cart.getProducts()
-                    .then(products => {
-                        res.render('shop/cart', {
-                            path: '/cart',
-                            pageTitle: 'Your Cart',
-                            products: products
-                        });
-                    })
-                    .catch(err => console.log(err));
-        })
-        .catch(err => console.log(err));
-/*
-    Cart.getCart(cart => {
-        Product.fetchAll(products => {
-            const cartProducts = [];
-            for (product of products) {
-                const cartProductData = cart.products.find(p => p.id === product.id);
-                if (cartProductData) {
-                    cartProducts.push({productData: product, qty: cartProductData.qty});
-                }
-            }
+        .then(products => {
             res.render('shop/cart', {
                 path: '/cart',
                 pageTitle: 'Your Cart',
-                products: cartProducts
+                products: products
             });
-        });
-    });
-*/
+        })
+        .catch(err => console.log(err));
 
 }
 
 exports.postCart = (req, res, next) => {
     const id = req.body.productID;
-    let fetchedCart;
-    let updatedQty = 1;
-    req.user
-        .getCart()
-        .then(cart => {
-            fetchedCart = cart;
-            return cart.getProducts({where: {id: id}});
-        })
-        .then(products => {
-            let product;
-            if (products.length > 0) {
-                product = products[0];
-            }
-            // if we can find the product through {id: id}, add quantity
-            if (product) {
-                const oldQty = product.cartItem.quantity;
-                updatedQty = oldQty + 1;
-                return product;
-            }
-            // else, simply return the product
-            return Product.findByPk(id);
-        })
-        .then(product => {
-            return fetchedCart.addProduct(product, {
-                through: {quantity: updatedQty}
-            });
-        })
-        .then(() => {
-            return fetchedCart.setProducts(null);
-        })
-        .then(result => {
-            res.redirect('/cart');
-        })
-        .catch(err => console.log(err));
+    Product.findByID(id)
+            .then(product => {
+                return req.user.addToCart(product);
+            })
+            .then(result => {
+                console.log(result);
+                res.redirect('/cart');
+            })
+            .catch(err => console.log(err));
+
+
+    // let fetchedCart;
+    // let updatedQty = 1;
+    // req.user
+    //     .getCart()
+    //     .then(cart => {
+    //         fetchedCart = cart;
+    //         return cart.getProducts({where: {id: id}});
+    //     })
+    //     .then(products => {
+    //         let product;
+    //         if (products.length > 0) {
+    //             product = products[0];
+    //         }
+    //         // if we can find the product through {id: id}, add quantity
+    //         if (product) {
+    //             const oldQty = product.cartItem.quantity;
+    //             updatedQty = oldQty + 1;
+    //             return product;
+    //         }
+    //         // else, simply return the product
+    //         return Product.findByPk(id);
+    //     })
+    //     .then(product => {
+    //         return fetchedCart.addProduct(product, {
+    //             through: {quantity: updatedQty}
+    //         });
+    //     })
+    //     .then(() => {
+    //         return fetchedCart.setProducts(null);
+    //     })
+    //     .then(result => {
+    //         res.redirect('/cart');
+    //     })
+    //     .catch(err => console.log(err));
 }
 
 exports.postCartDelete = (req, res, next) => {

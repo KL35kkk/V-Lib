@@ -13,14 +13,9 @@ exports.postAddProductPage = (req, res, next) => {  // parsing the incoming requ
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    req.user
-        .createProduct({
-            title: title,
-            price: price,
-            imageUrl: imageUrl,
-            description: description,
-            userID: req.user.id
-        })
+    // req.user._id is already an ObjectId
+    const product = new Product(title, price, description, imageUrl, null, req.user._id);
+    product.save()
         .then(result => {
             // console.log(result);
             console.log('CREATE PRODUCT!');
@@ -40,9 +35,8 @@ exports.getEditProductPage = (req, res, next) => {
     }
     const productID = req.params.productID;
     // Product.findByPk(productID)
-    req.user.getProducts({where: {id: productID}})
-        .then(products => {
-            const product = products[0];
+    Product.findByID(productID)
+        .then(product => {
             if (!product) {
                 return res.redirect('/admin/products');
             }
@@ -63,15 +57,10 @@ exports.postEditProductPage = (req, res, next) => {
     const updatedImageUrl = req.body.imageUrl;
     const updatedDescription = req.body.description;
     const updatedPrice = req.body.price;
-
-    Product.findByPk(productID)
-        .then(product => {
-            product.title = updatedTitle;
-            product.imageUrl = updatedImageUrl;
-            product.description = updatedDescription;
-            product.price = updatedPrice;
-            return product.save();
-        })
+    
+    const updatedProduct = new Product(updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, productID);
+    
+    updatedProduct.save()
         // handles responses from the product.save() promise
         .then(result => {
             console.log('UPDATED PRODUCT!');
@@ -82,10 +71,7 @@ exports.postEditProductPage = (req, res, next) => {
 
 exports.postDeleteProductPage = (req, res, next) => {
     const productID = req.body.productID;
-    Product.findByPk(productID)
-        .then(product => {
-            return product.destroy();
-        })
+    Product.deleteById(productID)
         .then(result => {
             console.log('DESTROYED PRODUCT!');
             res.redirect('/admin/products');
@@ -95,7 +81,7 @@ exports.postDeleteProductPage = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-    req.user.getProducts()
+    Product.fetchAll()
         .then(products => {
             // renders to the templating engine
             res.render('admin/products', {
