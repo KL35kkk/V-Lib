@@ -20,11 +20,11 @@ router.get('/products/:productID', shopController.getProduct);
 router.get('/cart', shopController.getCart);
 router.post('/cart', shopController.postCart);
 // Also add delete-item in the cart page
-// router.post('/cart-delete-item', shopController.postCartDelete);
+router.post('/cart-delete-item', shopController.postCartDelete);
 
 // Orders
-// router.get('/orders', shopController.getOrders);
-// router.post('/create-order', shopController.postOrders);
+router.get('/orders', shopController.getOrders);
+router.post('/create-order', shopController.postOrders);
 
 // Checkout
 // router.get('/checkout', shopController.getCheckout);
